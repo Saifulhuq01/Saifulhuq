@@ -57,7 +57,7 @@ export default function Projects() {
               <h3 className="text-xl md:text-2xl font-bold mb-4 font-display uppercase text-white group-hover:text-accent transition-colors">
                 {p.title}
               </h3>
-              <p className="text-gray-400 leading-relaxed font-mono text-sm md:text-base">
+              <p className="!text-white text-white leading-relaxed font-mono text-sm md:text-base">
                 {p.desc}
               </p>
             </div>
@@ -65,7 +65,7 @@ export default function Projects() {
             <div className="mt-8 pt-4 font-mono relative">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-muted/20 to-transparent" />
               <div className="text-xs md:text-sm mb-4 flex items-center justify-between">
-                <span className="text-gray-400">{p.tech}</span>
+                <span className="!text-white text-white">{p.tech}</span>
               </div>
               <a href={p.linkHref} target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-accent hover:text-white transition-colors uppercase tracking-widest text-sm font-bold group/link">
                 [ {p.linkText} ]
