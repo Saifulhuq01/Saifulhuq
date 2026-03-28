@@ -1,8 +1,51 @@
 'use client';
 import { SVGDrawPath } from '@/components/ui/RoughElements';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 export default function Contact() {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (status === 'loading') return;
+
+    setStatus('loading');
+    setErrorMessage('');
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetName: formData.get('targetName'),
+          targetEmail: formData.get('targetEmail'),
+          payload: formData.get('payload'),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to dispatch payload.');
+      }
+
+      setStatus('success');
+      form.reset();
+      
+      // Reset success state after a few seconds
+      setTimeout(() => setStatus('idle'), 5000);
+    } catch (error: any) {
+      console.error('Dispatch Error:', error);
+      setStatus('error');
+      setErrorMessage(error.message || 'Transmission failed. Try again.');
+    }
+  };
+
   return (
     <section id="contact" className="relative pt-32 pb-12 mt-20">
       {/* Top border scratch */}
@@ -45,21 +88,46 @@ export default function Contact() {
             <SVGDrawPath stroke="var(--color-accent-dim)" />
           </div>
 
-          <form className="relative z-10 space-y-8 font-mono bg-surface-2/50 p-6 md:p-8 border border-muted/10" onSubmit={(e) => { e.preventDefault(); alert("Form submission handler connected. Wire to your backend logic!")}}>
+          <form 
+            className="relative z-10 space-y-8 font-mono bg-surface-2/50 p-6 md:p-8 border border-muted/10" 
+            onSubmit={handleSubmit}
+          >
+            {status === 'success' && (
+              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-surface-2/95 backdrop-blur-sm border border-accent/20">
+                <motion.div 
+                  initial={{ scale: 0.8, opacity: 0 }} 
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-accent text-center"
+                >
+                  <div className="text-4xl mb-4">{'// ACKNOWLEDGED'}</div>
+                  <p className="text-white text-sm tracking-widest uppercase">Payload sequence complete.</p>
+                </motion.div>
+              </div>
+            )}
+
             <div className="flex flex-col relative group">
               <label className="text-gray-400 mb-2 text-xs md:text-sm uppercase tracking-widest group-focus-within:text-accent transition-colors">Target_Name</label>
-              <input type="text" className="bg-surface border-b border-muted/30 focus:border-accent outline-none p-3 text-white transition-colors w-full focus:bg-surface-2/80" required />
+              <input name="targetName" disabled={status === 'loading'} type="text" className="bg-surface border-b border-muted/30 focus:border-accent outline-none p-3 text-white transition-colors w-full focus:bg-surface-2/80 disabled:opacity-50" required />
             </div>
             <div className="flex flex-col relative group">
               <label className="text-gray-400 mb-2 text-xs md:text-sm uppercase tracking-widest group-focus-within:text-accent transition-colors">Target_Email</label>
-              <input type="email" className="bg-surface border-b border-muted/30 focus:border-accent outline-none p-3 text-white transition-colors w-full focus:bg-surface-2/80" required />
+              <input name="targetEmail" disabled={status === 'loading'} type="email" className="bg-surface border-b border-muted/30 focus:border-accent outline-none p-3 text-white transition-colors w-full focus:bg-surface-2/80 disabled:opacity-50" required />
             </div>
             <div className="flex flex-col relative group">
               <label className="text-gray-400 mb-2 text-xs md:text-sm uppercase tracking-widest group-focus-within:text-accent transition-colors">Payload (Message)</label>
-              <textarea rows={4} className="bg-surface border-b border-muted/30 focus:border-accent outline-none p-3 text-white transition-colors resize-none w-full focus:bg-surface-2/80" required></textarea>
+              <textarea name="payload" disabled={status === 'loading'} rows={4} className="bg-surface border-b border-muted/30 focus:border-accent outline-none p-3 text-white transition-colors resize-none w-full focus:bg-surface-2/80 disabled:opacity-50" required></textarea>
             </div>
-            <button type="submit" className="w-full relative inline-block px-8 py-4 font-bold text-white bg-accent hover:bg-white hover:text-black transition-colors uppercase tracking-[0.3em] overflow-hidden group">
-              <span className="relative z-10">Execute_Send</span>
+            
+            {status === 'error' && (
+              <div className="text-red-500 text-sm font-bold uppercase tracking-widest">
+                [ERROR]: {errorMessage}
+              </div>
+            )}
+
+            <button disabled={status === 'loading'} type="submit" className="w-full relative inline-block px-8 py-4 font-bold text-white bg-accent hover:bg-white hover:text-black transition-colors uppercase tracking-[0.3em] overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed">
+              <span className="relative z-10 transition-colors group-hover:text-black">
+                {status === 'loading' ? 'EXECUTING...' : 'EXECUTE_SEND'}
+              </span>
               <div className="absolute inset-0 bg-white transform scale-x-0 origin-left transition-transform duration-300 group-hover:scale-x-100 z-0"></div>
             </button>
           </form>
