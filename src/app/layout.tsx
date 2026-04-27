@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mohammed Saifulhuq — Software Engineer | Kafka, Spring Boot, Open Source",
+  title: "Saifulhuq - Software Engineer | Kafka, Spring Boot, Open Source",
   description: "Portfolio of Mohammed Saifulhuq (Sai). Founder of DLQ Revive (open-source Kafka recovery), Apache Fineract contributor. Building with Java 17, Spring Boot 3, Apache Kafka, Angular, and PostgreSQL.",
-  keywords: ["Mohammed Saifulhuq", "Software Engineer", "Kafka", "DLQ Revive", "Apache Fineract", "Spring Boot", "Java", "TypeScript", "Open Source", "Portfolio"],
+  keywords: ["Saifulhuq", "Software Engineer", "Kafka", "DLQ Revive", "Apache Fineract", "Spring Boot", "Java", "TypeScript", "Open Source", "Portfolio"],
   icons: {
     icon: '/favicon.png',
   },

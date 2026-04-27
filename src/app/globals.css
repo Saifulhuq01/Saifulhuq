@@ -17,6 +17,11 @@ body {
   background: var(--color-base);
   color: #e0e0e0;
   font-family: var(--font-mono);
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 ::selection {
@@ -24,10 +29,23 @@ body {
   color: #ffffff;
 }
 
+/* ─── Custom cursor visibility ─── */
+@media (pointer: fine) {
+  .cursor-none, .cursor-none * {
+    cursor: none !important;
+  }
+  .cursor-none a, .cursor-none button, .cursor-none [role="button"] {
+    cursor: none !important;
+  }
+}
+
 /* ─── Scrollbar ─── */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--color-base); }
-::-webkit-scrollbar-thumb { background: var(--color-accent); border-radius: 3px; }
+::-webkit-scrollbar-thumb { 
+  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-dim));
+  border-radius: 3px;
+}
 
 /* ─── Noise overlay ─── */
 @layer utilities {
@@ -36,7 +54,144 @@ body {
   }
 }
 
-/* ─── Animated gradient line ─── */
+/* ═══════════════════════════════════════════════════════
+   LIQUID GLASS DESIGN SYSTEM
+   ═══════════════════════════════════════════════════════ */
+
+/* Core liquid glass surface */
+.glass-liquid {
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.015);
+}
+
+/* Glass with refraction gradient highlight */
+.glass-refract {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.045) 0%,
+    rgba(255, 255, 255, 0.01) 40%,
+    rgba(255, 69, 0, 0.025) 100%
+  );
+  backdrop-filter: blur(24px) saturate(2);
+  -webkit-backdrop-filter: blur(24px) saturate(2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.08),
+    0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Small glass pill (badges, tags) */
+.glass-pill {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px) saturate(1.5);
+  -webkit-backdrop-filter: blur(12px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 2px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-pill:hover {
+  background: rgba(255, 69, 0, 0.08);
+  border-color: rgba(255, 69, 0, 0.25);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 69, 0, 0.1),
+    0 4px 16px rgba(255, 69, 0, 0.08),
+    0 0 20px rgba(255, 69, 0, 0.04);
+  transform: translateY(-1px) scale(1.05);
+}
+
+/* Iridescent top edge for cards */
+.glass-edge-iridescent::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 69, 0, 0.4) 20%,
+    rgba(255, 180, 100, 0.3) 40%,
+    rgba(200, 150, 255, 0.2) 60%,
+    rgba(100, 200, 255, 0.25) 80%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.glass-edge-iridescent:hover::before {
+  opacity: 1;
+}
+
+/* Light-leak sweep on hover */
+.glass-light-leak {
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-light-leak::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.03) 40%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.03) 60%,
+    transparent 100%
+  );
+  transition: left 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass-light-leak:hover::after {
+  left: 120%;
+}
+
+/* Glass orb (for timeline dots, status indicators) */
+.glass-orb {
+  background: radial-gradient(
+    circle at 35% 35%,
+    rgba(255, 69, 0, 0.6) 0%,
+    rgba(255, 69, 0, 0.3) 40%,
+    rgba(255, 69, 0, 0.1) 70%,
+    transparent 100%
+  );
+  box-shadow:
+    inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+    0 0 12px rgba(255, 69, 0, 0.2),
+    0 0 4px rgba(255, 69, 0, 0.4);
+}
+
+/* Inner glow effect utility */
+.glass-inner-glow {
+  box-shadow:
+    inset 0 0 30px rgba(255, 69, 0, 0.03),
+    0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CSS ANIMATIONS (replacing JS-driven Framer Motion loops)
+   ═══════════════════════════════════════════════════════ */
+
+/* Animated gradient line */
 @keyframes gradient-shift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -47,7 +202,7 @@ body {
   animation: gradient-shift 3s ease infinite;
 }
 
-/* ─── Typing cursor blink ─── */
+/* Typing cursor blink */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50% { opacity: 0; }
@@ -57,7 +212,7 @@ body {
   animation: blink 1s step-end infinite;
 }
 
-/* ─── Glow pulse ─── */
+/* Glow pulse */
 @keyframes glow-pulse {
   0%, 100% { box-shadow: 0 0 5px rgba(255, 69, 0, 0.3); }
   50% { box-shadow: 0 0 20px rgba(255, 69, 0, 0.6); }
@@ -67,7 +222,7 @@ body {
   animation: glow-pulse 2s ease-in-out infinite;
 }
 
-/* ─── Float animation ─── */
+/* Float animation */
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
@@ -75,4 +230,167 @@ body {
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
+}
+
+/* Breathe animation (ambient blobs) */
+@keyframes breathe {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes breathe-slow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.08); }
+}
+
+.animate-breathe {
+  animation: breathe 8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.animate-breathe-slow {
+  animation: breathe-slow 12s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 30%, rgba(255, 69, 0, 0.08) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Scan line */
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.animate-scan {
+  animation: scan 8s linear infinite;
+}
+
+/* ─── Chevron bounce (replaces Framer Motion infinite x:[0,3,0]) ─── */
+@keyframes chevron-bounce {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(3px); }
+}
+
+.animate-chevron {
+  animation: chevron-bounce 2s ease-in-out infinite;
+  animation-delay: var(--chevron-delay, 0s);
+  will-change: transform;
+}
+
+/* ─── Watermark scroll (replaces Framer Motion x:[0,-200] repeat) ─── */
+@keyframes watermark-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-watermark {
+  animation: watermark-scroll 30s linear infinite;
+  will-change: transform;
+}
+
+/* ─── Hash rotate (replaces Framer Motion rotate:[0,10,-10,0]) ─── */
+@keyframes hash-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  75% { transform: rotate(-10deg); }
+}
+
+.animate-hash {
+  animation: hash-wiggle 2s ease-in-out infinite;
+  animation-delay: var(--hash-delay, 0s);
+  will-change: transform;
+}
+
+/* ─── Icon wiggle (for social link icons) ─── */
+@keyframes icon-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(10deg); }
+  75% { transform: rotate(-10deg); }
+}
+
+.animate-icon-wiggle {
+  animation: icon-wiggle 3s ease-in-out infinite;
+  animation-delay: var(--icon-delay, 0s);
+  will-change: transform;
+}
+
+/* ─── Comment blink (replaces Framer opacity:[0.4,1,0.4]) ─── */
+@keyframes comment-blink {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+.animate-comment-blink {
+  animation: comment-blink 2s ease-in-out infinite;
+}
+
+/* ─── Status pulse (green dot) ─── */
+@keyframes status-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+}
+
+.animate-status-pulse {
+  animation: status-pulse 2s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* ─── Glow box shadow pulse ─── */
+@keyframes box-glow-pulse {
+  0%, 100% { box-shadow: 0 0 0px rgba(255, 69, 0, 0); }
+  50% { box-shadow: 0 0 15px rgba(255, 69, 0, 0.3); }
+}
+
+.animate-box-glow {
+  animation: box-glow-pulse 3s ease-in-out infinite;
+}
+
+/* ─── 3D Card tilt via CSS (replaces per-card useMotionValue springs) ─── */
+.card-tilt {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.card-tilt:hover {
+  transform: perspective(800px) rotateX(-2deg) rotateY(2deg) translateZ(10px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   GPU + PERFORMANCE UTILITIES
+   ═══════════════════════════════════════════════════════ */
+
+.gpu-layer {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* ─── Perspective for 3D cards ─── */
+.perspective-\[400px\] {
+  perspective: 400px;
+}
+
+.perspective-\[1200px\] {
+  perspective: 1200px;
+}
+
+/* ─── Focus ring override ─── */
+input:focus, textarea:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+/* ─── Smooth section scrolling offset ─── */
+section[id] {
+  scroll-margin-top: 80px;
 }

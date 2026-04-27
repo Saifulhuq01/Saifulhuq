@@ -36,7 +36,7 @@ const CircuitLine = ({ x1, y1, x2, y2, delay }: { x1: number; y1: number; x2: nu
   />
 );
 
-// Animated data packet traveling along a path
+// Animated data packet traveling along a path — reduced repeat frequency
 const DataPulse = ({ x1, y1, x2, y2, delay }: { x1: number; y1: number; x2: number; y2: number; delay: number; }) => (
   <motion.circle
     r={2}
@@ -49,9 +49,9 @@ const DataPulse = ({ x1, y1, x2, y2, delay }: { x1: number; y1: number; x2: numb
     }}
     transition={{
       delay,
-      duration: 1.2,
+      duration: 1.5,
       repeat: Infinity,
-      repeatDelay: 3,
+      repeatDelay: 6,
       ease: "linear"
     }}
   />
@@ -103,7 +103,7 @@ const ModuleBlock = ({ x, y, w, h, label, delay }: { x: number; y: number; w: nu
   </motion.g>
 );
 
-// Scanning line effect
+// Scanning line effect — reduced frequency
 const ScanLine = ({ delay }: { delay: number }) => (
   <motion.line
     x1={0} y1={0} x2={350} y2={0}
@@ -112,18 +112,7 @@ const ScanLine = ({ delay }: { delay: number }) => (
     strokeOpacity={0.15}
     initial={{ y1: 0, y2: 0 }}
     animate={{ y1: [0, 400], y2: [0, 400] }}
-    transition={{ delay, duration: 3, repeat: Infinity, repeatDelay: 4, ease: "linear" }}
-  />
-);
-
-// Hex grid background pattern
-const HexDot = ({ cx, cy, delay }: { cx: number; cy: number; delay: number }) => (
-  <motion.circle
-    cx={cx} cy={cy} r={1}
-    fill="var(--color-accent)"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: [0, 0.15, 0.08] }}
-    transition={{ delay, duration: 2 }}
+    transition={{ delay, duration: 4, repeat: Infinity, repeatDelay: 8, ease: "linear" }}
   />
 );
 
@@ -141,17 +130,20 @@ export default function TechAssembly() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Background hex grid dots */}
-        {Array.from({ length: 12 }).map((_, row) =>
-          Array.from({ length: 10 }).map((_, col) => (
-            <HexDot
-              key={`dot-${row}-${col}`}
-              cx={col * 35 + (row % 2 ? 17 : 0)}
-              cy={row * 35}
-              delay={0.02 * (row + col)}
-            />
-          ))
-        )}
+        {/* Background hex grid — single SVG pattern instead of 120 components */}
+        <defs>
+          <pattern id="hexDots" x="0" y="0" width="35" height="35" patternUnits="userSpaceOnUse">
+            <circle cx="0" cy="0" r="1" fill="var(--color-accent)" opacity="0.1" />
+            <circle cx="17" cy="17" r="1" fill="var(--color-accent)" opacity="0.08" />
+          </pattern>
+        </defs>
+        <motion.rect
+          width="350" height="400"
+          fill="url(#hexDots)"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2, duration: 1 }}
+        />
 
         {/* Scan line effect */}
         <ScanLine delay={2} />
@@ -173,23 +165,16 @@ export default function TechAssembly() {
         <CircuitNode x={175} y={210} delay={1.1} size={5} />
 
         {/* === LAYER 3: Connecting lines === */}
-        {/* API_GW down to center junction */}
         <CircuitLine x1={60} y1={70} x2={60} y2={120} delay={1.0} />
         <CircuitLine x1={60} y1={120} x2={175} y2={100} delay={1.1} />
-        {/* AUTH_SVC down to center junction */}
         <CircuitLine x1={285} y1={70} x2={290} y2={120} delay={1.1} />
         <CircuitLine x1={290} y1={120} x2={175} y2={100} delay={1.2} />
-        {/* Center junction down to CORE_ENGINE */}
         <CircuitLine x1={175} y1={100} x2={175} y2={140} delay={1.3} />
-        {/* CORE_ENGINE down to lower junction */}
         <CircuitLine x1={175} y1={190} x2={175} y2={210} delay={1.4} />
-        {/* Lower junction to DB_CLUSTER */}
         <CircuitLine x1={175} y1={210} x2={60} y2={230} delay={1.5} />
         <CircuitLine x1={60} y1={230} x2={50} y2={260} delay={1.6} />
-        {/* Lower junction to MSG_QUEUE */}
         <CircuitLine x1={175} y1={210} x2={290} y2={230} delay={1.5} />
         <CircuitLine x1={290} y1={230} x2={292} y2={260} delay={1.6} />
-        {/* Down to DISPATCHER */}
         <CircuitLine x1={175} y1={210} x2={170} y2={330} delay={1.8} />
 
         {/* === LAYER 4: Data pulses traveling the circuit === */}
@@ -211,16 +196,12 @@ export default function TechAssembly() {
           animate={{ opacity: 0.3 }}
           transition={{ delay: 0.3, duration: 0.8 }}
         >
-          {/* Top-left */}
           <line x1="0" y1="15" x2="0" y2="0" stroke="var(--color-accent)" strokeWidth="1.5" />
           <line x1="0" y1="0" x2="15" y2="0" stroke="var(--color-accent)" strokeWidth="1.5" />
-          {/* Top-right */}
           <line x1="335" y1="0" x2="350" y2="0" stroke="var(--color-accent)" strokeWidth="1.5" />
           <line x1="350" y1="0" x2="350" y2="15" stroke="var(--color-accent)" strokeWidth="1.5" />
-          {/* Bottom-left */}
           <line x1="0" y1="385" x2="0" y2="400" stroke="var(--color-accent)" strokeWidth="1.5" />
           <line x1="0" y1="400" x2="15" y2="400" stroke="var(--color-accent)" strokeWidth="1.5" />
-          {/* Bottom-right */}
           <line x1="335" y1="400" x2="350" y2="400" stroke="var(--color-accent)" strokeWidth="1.5" />
           <line x1="350" y1="385" x2="350" y2="400" stroke="var(--color-accent)" strokeWidth="1.5" />
         </motion.g>
